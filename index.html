@@ -12,15 +12,12 @@
   };
 
   captureButton.addEventListener('click', () => {
+    // Draw the video frame to the canvas.
     context.drawImage(player, 0, 0, canvas.width, canvas.height);
-
-    <strong>
-      // Stop all video streams.player.srcObject.getVideoTracks().forEach(track => track.stop());
-    </strong>;
   });
 
+  // Attach the video stream to the video element and autoplay.
   navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-    // Attach the video stream to the video element and autoplay.
     player.srcObject = stream;
   });
 </script>

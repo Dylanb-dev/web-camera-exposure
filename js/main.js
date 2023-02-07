@@ -84,7 +84,7 @@ async function loadProperties(stream) {
     await track.applyConstraints({
         advanced: [{
             exposureTime: capabilities.exposureTime.max,
-            iso: capabilities.iso.max
+            iso: 1600
         }]
     });
 

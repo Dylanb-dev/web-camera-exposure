@@ -6,18 +6,15 @@
  *  tree.
  */
 'use strict';
-
-var EXPOSURE_TIME = 5000
-
 let count = 0
 
 // Put variables in global scope to make them available to the browser console.
 const constraints = window.constraints = {
     audio: false,
     video: true,
-    video: {
-        facingMode: { exact: "environment" }
-    },
+    // video: {
+    //     facingMode: { exact: "environment" }
+    // },
     height: 320,
     width: 320,
 };
@@ -82,6 +79,9 @@ async function loadProperties() {
     jsonDump(capabilities)
     jsonDump(settings)
 
+    var intervalId = window.setInterval(function(){
+        takepicture()
+      }, capabilities.exposureTime.max/10);
 
     //   for (const property of ['exposureMode', 'exposureTime', 'exposureCompensation', 'brightness', 'whiteBalanceMode']) {
     //     // Check whether camera supports exposure.

@@ -16,7 +16,8 @@ const constraints = window.constraints = {
     audio: false,
     video: true,
     height: 320,
-    width: 320
+    width: 320,
+    facingMode: "environment"
 };
 
 function handleSuccess(stream) {
@@ -68,7 +69,6 @@ async function loadProperties() {
     await track.applyConstraints({
         advanced: [{
             exposureMode: "manual",
-            video: { facingMode: "environment" }
         }]
     });
     await track.applyConstraints({

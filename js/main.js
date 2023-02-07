@@ -1,14 +1,9 @@
-/*
- *  Copyright (c) 2022 The WebRTC project authors. All Rights Reserved.
- *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree.
- */
 'use strict';
 let count = 0
 
 var intervalId;
+const datestring = new Date().toString()
+
 
 // Put variables in global scope to make them available to the browser console.
 const constraints = window.constraints = {
@@ -16,71 +11,62 @@ const constraints = window.constraints = {
     video: {
         facingMode: "environment"
     },
-    height: 320,
-    width: 320,
+    height: 8000,
+    width: 8000,
 };
 
 function handleSuccess(stream) {
     const video = document.querySelector('video');
+    video.srcObject = stream;
     const videoTracks = stream.getVideoTracks();
     console.log('Got stream with constraints:', constraints);
     console.log(`Using video device: ${videoTracks[0].label}`);
-    video.srcObject = stream;
-
     // make track variable available to browser console.
     [window.track] = stream.getVideoTracks();
+    document.createElement("canvas");
 
-    loadProperties();
-
-    const track = window.track;
-    const capabilities = track.getCapabilities();
-   
-
-    document.querySelector('#stopVideo').addEventListener('click', e => stopStreamedVideo(stream, intervalId));
+    loadProperties(stream);
+    document.querySelector('#stopVideo').addEventListener('click', e => stopStreamedVideo(stream));
 
 }
 
 
 function stopStreamedVideo(stream) {
-    const video = document.querySelector('video');
     const videoTracks = stream.getVideoTracks();
 
     videoTracks.forEach((track) => {
         track.stop();
     });
-    video.srcObject = null;
     clearInterval(intervalId)
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-
-takePicture.addEventListener(
-    "click",
-    (ev) => {
-        takepicture();
-        ev.preventDefault();
-    },
-    false
-);
-
-
-function takepicture() {
-    const video = document.querySelector('video');
-
-    const context = canvas.getContext("2d");
-    canvas.width = 320;
-    canvas.height = 320;
-    context.drawImage(video, 0, 0, 320, 320);
-    const data = canvas.toDataURL("image/png");
+async function takepicture(stream) {
     const capturedFramesElement = document.querySelector('#capturedFrames');
-    count = count + 1
-    capturedFramesElement.innerHTML += `<img id="photo${count}" alt="" width="320" height="320"/>`;
-    const photoElement = document.querySelector(`#photo${count}`);
-    photoElement.setAttribute('src', data)
+    const video = document.querySelector('video');
+    const ctx = canvas.getContext("2d");
+    canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth;
+    ctx.drawImage(video, 0, 0);
+    canvas.toBlob(blob => {
+        count = count + 1
+        var imagesRef = window.ref(window.storageRef, `${datestring}/${count}.jpg`);
+        window.uploadBytes(imagesRef, blob).then((snapshot) => {
+            console.log('Uploaded a blob or file!');
+        });
+        const imageUrl = URL.createObjectURL(blob);
+        const imgElem = new Image();
+        imgElem.src = imageUrl;
+        capturedFramesElement.appendChild(imgElem);
+    });
+
 }
 
 
-async function loadProperties() {
+async function loadProperties(stream) {
     const track = window.track;
     const capabilities = track.getCapabilities();
     const settings = track.getSettings();
@@ -104,10 +90,13 @@ async function loadProperties() {
     jsonDump(capabilities)
     jsonDump(settings)
 
+    window.setTimeout(() => stopStreamedVideo(stream), 35000)
+    window.setTimeout(() => {
+        intervalId = window.setInterval(function () {
+            takepicture(stream)
+        }, capabilities.exposureTime.max / 10);
+    }, 5000)
 
-    intervalId = window.setInterval(function () {
-        takepicture()
-    }, capabilities.exposureTime.max / 10);
 
 
 
@@ -188,3 +177,16 @@ async function init(e) {
 }
 
 document.querySelector('#showVideo').addEventListener('click', e => init(e));
+
+// // Create a root reference
+// const storage = getStorage();
+
+// // Create a reference to 'mountains.jpg'
+// const mountainsRef = ref(storage, 'mountains.jpg');
+
+// // Create a reference to 'images/mountains.jpg'
+// const mountainImagesRef = ref(storage, 'images/mountains.jpg');
+
+// // While the file names are the same, the references point to different files
+// mountainsRef.name === mountainImagesRef.name;           // true
+// mountainsRef.fullPath === mountainImagesRef.fullPath;   // false 

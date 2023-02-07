@@ -32,9 +32,8 @@
 
 <div id="container">
     <h1>Long Exposure Test</h1>
-    <button id="showVideo">Start Capture</button>
+    <button id="showVideo">Start Capture (5 sec delay until start)</button>
     <button id="stopVideo">Stop Capture</button>
-    <button id="takePicture">Take photo</button>
     <br/>
     <video id="gum-local" autoplay playsinline></video>
     <br/>
@@ -46,7 +45,48 @@
     <div id="jsonDump"></div>
 
 </div>
+<script type="module">
 
+    // Import the functions you need from the SDKs you need
+  
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+    import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-storage.js";
+
+    // TODO: Add SDKs for Firebase products that you want to use
+  
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+  
+    // Your web app's Firebase configuration
+  
+    const firebaseConfig = {
+  
+      apiKey: "AIzaSyBYAQRyqjZ-vjXT1FikWjmVNDpHe4tiyJs",
+  
+      authDomain: "space-exposure-d0379.firebaseapp.com",
+  
+      projectId: "space-exposure-d0379",
+  
+      storageBucket: "space-exposure-d0379.appspot.com",
+  
+      messagingSenderId: "963000608298",
+  
+      appId: "1:963000608298:web:985c5a76757cdd41f9c553"
+  
+    };
+  
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    window.firebase = app
+        // Create a root reference
+    window.storageRef  = getStorage();
+
+    window.ref = ref
+    window.uploadBytes = uploadBytes
+    
+  </script>
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="js/main.js"></script>
 

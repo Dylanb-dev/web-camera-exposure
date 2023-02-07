@@ -14,10 +14,12 @@ let count = 0
 // Put variables in global scope to make them available to the browser console.
 const constraints = window.constraints = {
     audio: false,
-    video: { facingMode: "environment"},
+    video: true,
+    video: {
+        facingMode: { exact: "environment" }
+    },
     height: 320,
     width: 320,
-   
 };
 
 function handleSuccess(stream) {

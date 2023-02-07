@@ -8,12 +8,13 @@
 'use strict';
 let count = 0
 
+var intervalId;
+
 // Put variables in global scope to make them available to the browser console.
 const constraints = window.constraints = {
     audio: false,
-    // video: true,
     video: {
-        facingMode: { exact: "environment" }
+        facingMode: "environment"
     },
     height: 320,
     width: 320,
@@ -30,7 +31,28 @@ function handleSuccess(stream) {
     [window.track] = stream.getVideoTracks();
 
     loadProperties();
+
+    const track = window.track;
+    const capabilities = track.getCapabilities();
+   
+
+    document.querySelector('#stopVideo').addEventListener('click', e => stopStreamedVideo(stream, intervalId));
+
 }
+
+
+function stopStreamedVideo(stream) {
+    const video = document.querySelector('video');
+    const videoTracks = stream.getVideoTracks();
+
+    videoTracks.forEach((track) => {
+        track.stop();
+    });
+    video.srcObject = null;
+    clearInterval(intervalId)
+}
+
+
 
 takePicture.addEventListener(
     "click",
@@ -65,6 +87,9 @@ async function loadProperties() {
     console.log('Capabilities: ', capabilities);
     console.log('Settings: ', settings);
 
+    // if (capabilities.facingMode
+    // )
+
     await track.applyConstraints({
         advanced: [{
             exposureMode: "manual",
@@ -79,9 +104,12 @@ async function loadProperties() {
     jsonDump(capabilities)
     jsonDump(settings)
 
-    var intervalId = window.setInterval(function(){
+
+    intervalId = window.setInterval(function () {
         takepicture()
-      }, capabilities.exposureTime.max/10);
+    }, capabilities.exposureTime.max / 10);
+
+
 
     //   for (const property of ['exposureMode', 'exposureTime', 'exposureCompensation', 'brightness', 'whiteBalanceMode']) {
     //     // Check whether camera supports exposure.

@@ -9,7 +9,10 @@
 
   const constraints = {
     video: true,
-    exposureMode: "manual",
+    audio: false,
+    exposureMode: { exact: "manual" },
+    exposureTime: { exact: 1000 },
+    facingMode: { exact: "environment" },
   };
 
   captureButton.addEventListener('click', () => {

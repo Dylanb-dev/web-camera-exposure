@@ -105,9 +105,14 @@ async function loadProperties() {
             exposureTime: capabilities.exposureTime.max,
             whiteBalanceMode: "manual",
             colorTemperature: 3000,
-            focusMode: "single-shot",
+            focusMode: "manual",
             focusDistance: capabilities.focusDistance.max,
-            iso: 800
+            iso: 800,
+            height: capabilities.height.max,
+            width: capabilities.width.max,
+            zoom: capabilities.zoom.min,
+            resizeMode: "none"
+
             
             
             // contrast: 32,

@@ -3,6 +3,7 @@ let count = 0
 
 var intervalId;
 const datestring = new Date().toString()
+let imageBMP = []
 
 
 // Put variables in global scope to make them available to the browser console.
@@ -37,7 +38,25 @@ function stopStreamedVideo(stream) {
     videoTracks.forEach((track) => {
         track.stop();
     });
-    clearInterval(intervalId)
+    const video = document.querySelector('video');
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;;
+    canvas.height = video.videoHeight;;
+
+    imageBMP.forEach(async ({bitmap, last}, i) => {
+        const ctx = canvas.getContext("bitmaprenderer");
+        ctx.transferFromImageBitmap(bitmap);
+        const blob2 = await new Promise((res) => canvas.toBlob(res));
+        var imagesRef = window.ref(window.storageRef, `${datestring}/${count}-${last}`);
+        window.uploadBytes(imagesRef, blob2).then((snapshot) => {
+            console.log('Uploaded a blob or file!');
+        });
+    })
+    // Common method
+    // const ctx = canvas.getContext("2d");
+    // ctx.drawImage(frame, 0, 0);
+    // less resource intensive method
+
 }
 
 function sleep(ms) {
@@ -116,24 +135,7 @@ async function loadProperties() {
                 console.log(frame);
                 frameCount++;
                 last = frame.timestamp;
-
-                var imagesRef = window.ref(window.storageRef, `${datestring}/${count}-${last}.bmp`);
-                window.uploadBytes(imagesRef, bitmap).then((snapshot) => {
-                    console.log('Uploaded a blob or file!');
-                });
-
-                const video = document.querySelector('video');
-                console.log(bitmap);
-                const canvas = document.createElement("canvas");
-                canvas.width = video.videoWidth;;
-                canvas.height = video.videoHeight;;
-                // Common method
-                // const ctx = canvas.getContext("2d");
-                // ctx.drawImage(frame, 0, 0);
-                // less resource intensive method
-                const ctx = canvas.getContext("bitmaprenderer");
-                ctx.transferFromImageBitmap(bitmap);
-                capturedFrames.appendChild(canvas);
+                imageBMP.push({bitmap, last})
                 // browser only seems to let you have 3 frames open
             }
             frame.close();

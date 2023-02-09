@@ -84,13 +84,13 @@ async function loadProperties() {
     await track.applyConstraints({
         advanced: [{
             exposureTime: capabilities.exposureTime.max,
-            contrast: 32,
-            brightness: 0,
-            whiteBalanceMode: "manual",
-            colorTemperature: 3200,
-            saturation: 60,
-            sharpness: 1,
-            iso: 2400
+            // contrast: 32,
+            // brightness: 0,
+            // whiteBalanceMode: "manual",
+            // colorTemperature: 3200,
+            // saturation: 60,
+            // sharpness: 1,
+            // iso: 2400
         }]
     });
 

@@ -110,7 +110,7 @@ async function loadProperties() {
             iso: 800,
             // height: capabilities.height.max,
             // width: capabilities.width.max,
-            zoom: capabilities.zoom.min,
+            // zoom: capabilities.zoom.min,
             // resizeMode: "none"
 
             

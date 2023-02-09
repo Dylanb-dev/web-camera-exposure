@@ -10,10 +10,10 @@ let imageBMP = []
 const constraints = window.constraints = {
     audio: false,
     video: {
-        facingMode: "environment"
+        facingMode: "environment",
+        height: 8000,
+        width: 8000,
     },
-    height: 8000,
-    width: 8000,
 };
 
 function handleSuccess(stream) {

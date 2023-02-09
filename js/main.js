@@ -11,8 +11,8 @@ const constraints = window.constraints = {
     audio: false,
     video: {
         facingMode: "environment",
-        height: 2000,
-        width: 2000,
+        height: 8000,
+        width: 8000,
     },
 };
 
@@ -107,7 +107,7 @@ async function loadProperties() {
             colorTemperature: 3000,
             focusMode: "manual",
             focusDistance: capabilities.focusDistance.max,
-            // iso: 800,
+            iso: 800,
             // height: capabilities.height.max,
             // width: capabilities.width.max,
             // zoom: capabilities.zoom.min,

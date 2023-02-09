@@ -44,29 +44,29 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function takepicture(stream) {
-    const capturedFramesElement = document.querySelector('#capturedFrames');
-    const video = document.querySelector('video');
-    const ctx = canvas.getContext("2d");
-    canvas.height = video.videoHeight;
-    canvas.width = video.videoWidth;
-    ctx.drawImage(video, 0, 0);
-    canvas.toBlob(blob => {
-        count = count + 1
-        var imagesRef = window.ref(window.storageRef, `${datestring}/${count}.jpg`);
-        window.uploadBytes(imagesRef, blob).then((snapshot) => {
-            console.log('Uploaded a blob or file!');
-        });
-        const imageUrl = URL.createObjectURL(blob);
-        const imgElem = new Image();
-        imgElem.src = imageUrl;
-        capturedFramesElement.appendChild(imgElem);
-    });
+// async function takepicture(stream) {
+//     const capturedFramesElement = document.querySelector('#capturedFrames');
+//     const video = document.querySelector('video');
+//     const ctx = canvas.getContext("2d");
+//     canvas.height = video.videoHeight;
+//     canvas.width = video.videoWidth;
+//     ctx.drawImage(video, 0, 0);
+//     canvas.toBlob(blob => {
+//         count = count + 1
+//         var imagesRef = window.ref(window.storageRef, `${datestring}/${count}.jpg`);
+//         window.uploadBytes(imagesRef, blob).then((snapshot) => {
+//             console.log('Uploaded a blob or file!');
+//         });
+//         const imageUrl = URL.createObjectURL(blob);
+//         const imgElem = new Image();
+//         imgElem.src = imageUrl;
+//         capturedFramesElement.appendChild(imgElem);
+//     });
 
-}
+// }
 
 
-async function loadProperties(stream) {
+async function loadProperties() {
     const track = window.track;
     const capabilities = track.getCapabilities();
     const settings = track.getSettings();
@@ -84,65 +84,62 @@ async function loadProperties(stream) {
     await track.applyConstraints({
         advanced: [{
             exposureTime: capabilities.exposureTime.max,
-            iso: 1600
+            contrast: 32,
+            brightness: 0,
+            whiteBalanceMode: "manual",
+            colorTemperature: 3200,
+            saturation: 60,
+            sharpness: 1,
+            iso: 2400
         }]
     });
+
+    const readable = (new MediaStreamTrackProcessor(track)).readable;
+
+    // vars to control our read loop
+    let last = 0;
+    let frameCount = 0;
 
     jsonDump(capabilities)
     jsonDump(settings)
 
-    window.setTimeout(() => stopStreamedVideo(stream), 35000)
-    window.setTimeout(() => {
-        intervalId = window.setInterval(function () {
-            takepicture(stream)
-        }, capabilities.exposureTime.max / 10);
-    }, 5000)
+    const queuingStrategy = new CountQueuingStrategy({highWaterMark: 1});
+    const writableStream = new WritableStream({
+        write: async frame => {
+            frameCount++;
+            if (frameCount > 10 && frame.timestamp > last) {
+                const bitmap = await createImageBitmap(frame);
+                console.log(frame);
+                frameCount++;
+                last = frame.timestamp;
 
+                var imagesRef = window.ref(window.storageRef, `${datestring}/${count}-${last}.bmp`);
+                window.uploadBytes(imagesRef, bitmap).then((snapshot) => {
+                    console.log('Uploaded a blob or file!');
+                });
 
+                const video = document.querySelector('video');
+                console.log(bitmap);
+                const canvas = document.createElement("canvas");
+                canvas.width = video.videoWidth;;
+                canvas.height = video.videoHeight;;
+                // Common method
+                // const ctx = canvas.getContext("2d");
+                // ctx.drawImage(frame, 0, 0);
+                // less resource intensive method
+                const ctx = canvas.getContext("bitmaprenderer");
+                ctx.transferFromImageBitmap(bitmap);
+                capturedFrames.appendChild(canvas);
+                // browser only seems to let you have 3 frames open
+            }
+            frame.close();
+        },
+        close: () => console.log("stream closed"),
+        abort: () => console.log("stream aborted"),
+    }, queuingStrategy);
+    console.log(readable)
+    await readable.pipeTo(writableStream);
 
-
-    //   for (const property of ['exposureMode', 'exposureTime', 'exposureCompensation', 'brightness', 'whiteBalanceMode']) {
-    //     // Check whether camera supports exposure.
-    //     if (!(property in settings)) {
-    //       errorMsg(`Camera does not support ${property}.`);
-    //       continue;
-    //     }
-
-    //     let element;
-
-    //     if (Array.isArray(capabilities[property])) {
-    //       // Map it to a select element.
-    //       const select = document.querySelector(`select[name=${property}]`);
-    //       element = select;
-    //       if (capabilities[property] && !refreshValuesOnly) {
-    //         for (const mode of capabilities[property]) {
-    //           select.insertAdjacentHTML('afterbegin', `<option value="${mode}">${mode}</option>`);
-    //         }
-    //       }
-    //     } else {
-    //       // Map it to a slider element.
-    //       const input = document.querySelector(`input[name=${property}]`);
-    //       element = input;
-    //       input.min = capabilities[property].min;
-    //       input.max = capabilities[property].max;
-    //       input.step = capabilities[property].step;
-    //     }
-
-    //     element.value = settings[property];
-    //     element.disabled = false;
-    //     if (!refreshValuesOnly) {
-    //       element.oninput = async event => {
-    //         try {
-    //           const constraints = {advanced: [{[property]: element.value}]};
-    //           await track.applyConstraints(constraints);
-    //           console.log('Did successfully apply new constraints: ', constraints);
-    //           console.log('New camera settings: ', track.getSettings());
-    //         } catch (err) {
-    //           console.error('applyConstraints() failed: ', err);
-    //         }
-    //       };
-    //     }
-    //   }
 }
 
 function handleError(error) {

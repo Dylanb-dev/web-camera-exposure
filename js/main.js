@@ -107,9 +107,9 @@ async function loadProperties() {
             colorTemperature: 3000,
             focusMode: "manual",
             focusDistance: capabilities.focusDistance.max,
-            iso: 800,
-            // height: capabilities.height.max,
-            // width: capabilities.width.max,
+            iso: 1600,
+            height: capabilities.height.max,
+            width: capabilities.width.max,
             // zoom: capabilities.zoom.min,
             // resizeMode: "none"
 

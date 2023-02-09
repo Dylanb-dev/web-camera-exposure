@@ -108,10 +108,10 @@ async function loadProperties() {
             focusMode: "manual",
             focusDistance: capabilities.focusDistance.max,
             iso: 800,
-            height: capabilities.height.max,
-            width: capabilities.width.max,
+            // height: capabilities.height.max,
+            // width: capabilities.width.max,
             zoom: capabilities.zoom.min,
-            resizeMode: "none"
+            // resizeMode: "none"
 
             
             

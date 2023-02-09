@@ -11,8 +11,8 @@ const constraints = window.constraints = {
     audio: false,
     video: {
         facingMode: "environment",
-        height: 8000,
-        width: 8000,
+        height: 2000,
+        width: 2000,
     },
 };
 

@@ -107,7 +107,7 @@ async function loadProperties() {
             colorTemperature: 3000,
             focusMode: "single-shot",
             focusDistance: capabilities.focusDistance.max,
-            iso: 2400
+            iso: 800
             
             
             // contrast: 32,

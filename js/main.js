@@ -47,7 +47,7 @@ function stopStreamedVideo(stream) {
         const ctx = canvas.getContext("bitmaprenderer");
         ctx.transferFromImageBitmap(bitmap);
         const blob2 = await new Promise((res) => canvas.toBlob(res));
-        var imagesRef = window.ref(window.storageRef, `${datestring}/${count}-${last}`);
+        var imagesRef = window.ref(window.storageRef, `${datestring}/${i}-${last}`);
         window.uploadBytes(imagesRef, blob2).then((snapshot) => {
             console.log('Uploaded a blob or file!');
         });
@@ -108,6 +108,8 @@ async function loadProperties() {
             focusMode: "single-shot",
             focusDistance: capabilities.focusDistance.max,
             iso: 2400
+            
+            
             // contrast: 32,
             // brightness: 0,
             // saturation: 60,

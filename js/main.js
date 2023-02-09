@@ -85,7 +85,9 @@ async function loadProperties() {
         advanced: [{
             exposureTime: capabilities.exposureTime.max,
             whiteBalanceMode: "manual",
-            colorTemperature: 3200,
+            colorTemperature: 3000,
+            focusMode: "single-shot",
+            focusDistance: capabilities.focusDistance.max,
             iso: 2400
             // contrast: 32,
             // brightness: 0,
@@ -93,6 +95,8 @@ async function loadProperties() {
             // sharpness: 1,
         }]
     });
+
+    console.log('Settings: ', settings);
 
     const readable = (new MediaStreamTrackProcessor(track)).readable;
 
